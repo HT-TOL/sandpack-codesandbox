@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theme Generator</title>
+
+  <style>
+    :root {
+      --bg: #f8f9fb;
+      --panel: #ffffff;
+      --panel-2: #f1f3f5;
+      --text: #17181a;
+      --muted: #73777d;
+      --border: #dfe3e8;
+      --accent: #0971f1;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body.dark {
+      --bg: #0d0e10;
+      --panel: #151619;
+      --panel-2: #1d1f23;
+      --text: #f5f5f7;
+      --muted: #9499a1;
+      --border: #2b2e34;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 750;
+      letter-spacing: -0.03em;
+    }
+
+    .header-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .container {
+      width: min(1500px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      min-height: calc(100vh - 64px);
+    }
+
+    .controls {
+      border-right: 1px solid var(--border);
+      background: var(--panel);
+      padding: 24px;
+    }
+
+    .code {
+      padding: 24px;
+      min-width: 0;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 0;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      padding: 5px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .menu button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 9px 5px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .menu button.active {
+      background: var(--panel);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,.12);
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .title {
+      margin: 0 0 13px;
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: -0.01em;
+    }
+
+    .picker-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .picker-container.advanced {
+      grid-template-columns: 1fr;
+    }
+
+    .color-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .color-picker:hover {
+      border-color: var(--accent);
+    }
+
+    .color-preview {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      border-radius: 6px;
+      border: 1px solid rgba(128,128,128,.3);
+    }
+
+    .picker-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .mode-picker {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mode {
+      min-height: 74px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .mode.active {
+      border: 2px solid var(--accent);
+    }
+
+    .mode-color {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(128,128,128,.35);
+    }
+
+    .mode span {
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .input-group {
+      grid-column: span 2;
+    }
+
+    .input-group.half {
+      grid-column: span 1;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .input-group input {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      outline: none;
+      border-radius: 7px;
+      padding: 9px 10px;
+      font-size: 12px;
+    }
+
+    .input-group input:focus {
+      border-color: var(--accent);
+    }
+
+    .preview {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #111;
+    }
+
+    .preview-toolbar {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 12px;
+      border-bottom: 1px solid #292929;
+      background: #181818;
+      color: #aaa;
+      font-size: 11px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #555;
+    }
+
+    .preview-body {
+      display: grid;
+      grid-template-columns: 44% 56%;
+      min-height: 500px;
+    }
+
+    .editor {
+      min-width: 0;
+      padding: 18px;
+      overflow: auto;
+      background: #0f1012;
+      color: #ddd;
+      font-family:
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .line {
+      display: flex;
+    }
+
+    .line-number {
+      width: 38px;
+      flex: 0 0 38px;
+      color: #555;
+      user-select: none;
+      text-align: right;
+      padding-right: 14px;
+    }
+
+    .line-code {
+      white-space: pre;
+    }
+
+    .live-preview {
+      background: #fff;
+      color: #111;
+      padding: 35px;
+      overflow: auto;
+    }
+
+    .demo-card {
+      max-width: 430px;
+      margin: 25px auto;
+      padding: 28px;
+      border-radius: 14px;
+      background: var(--demo-surface);
+      border: 1px solid var(--demo-border);
+      box-shadow: 0 14px 45px rgba(0,0,0,.08);
+    }
+
+    .demo-card h2 {
+      margin: 0 0 10px;
+      color: var(--demo-primary);
+    }
+
+    .demo-card p {
+      color: var(--demo-text);
+      line-height: 1.6;
+    }
+
+    .demo-button {
+      border: 0;
+      padding: 11px 16px;
+      border-radius: 8px;
+      background: var(--demo-primary);
+      color: white;
+      font-weight: 700;
+    }
+
+    .demo-secondary {
+      color: var(--demo-secondary);
+    }
+
+    .demo-tertiary {
+      color: var(--demo-tertiary);
+    }
+
+    .export {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0f1012;
+    }
+
+    .export pre {
+      margin: 0;
+      padding: 18px;
+      overflow: auto;
+      max-height: 500px;
+      color: #ddd;
+      font-size: 12px;
+      line-height: 1.6;
+      font-family:
+        "SFMono-Regular",
+        Consolas,
+        monospace;
+    }
+
+    .export-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px;
+      border-top: 1px solid #292929;
+      background: #181818;
+    }
+
+    .export-actions button {
+      border: 1px solid #3a3a3a;
+      background: #222;
+      color: #ddd;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .export-actions button:hover {
+      border-color: var(--accent);
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--muted);
+      text-align: center;
+      padding: 20px;
+      font-size: 11px;
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .theme-card {
+      min-height: 76px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: left;
+      color: var(--text);
+    }
+
+    .theme-card:hover {
+      border-color: var(--accent);
+    }
+
+    .theme-colors {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .theme-colors span {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+    }
+
+    .theme-name {
+      font-size: 11px;
+      font-weight: 650;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .preview-body {
+        grid-template-columns: 1fr;
+      }
+
+      .editor {
+        min-height: 300px;
+      }
+
+      .live-preview {
+        min-height: 350px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .header {
+        padding: 0 15px;
+      }
+
+      .header-subtitle {
+        display: none;
+      }
+
+      .controls,
+      .code {
+        padding: 15px;
+      }
+
+      .picker-container,
+      .theme-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="logo">Theme Generator</div>
+    <div class="header-subtitle">Sandpack-compatible theme builder</div>
+  </header>
+
+  <main class="container">
+
+    <aside class="controls">
+
+      <div class="divider"></div>
+
+      <nav class="menu">
+        <button class="tab active" data-tab="basic">Basic</button>
+        <button class="tab" data-tab="advanced">Advanced</button>
+        <button class="tab" data-tab="library">Library</button>
+      </nav>
+
+      <div class="divider"></div>
+
+      <!-- BASIC -->
+      <section id="basic" class="panel active">
+
+        <h3 class="title">Appearance</h3>
+
+        <div class="mode-picker">
+          <button class="mode active" data-mode="light">
+            <div class="mode-color" style="background:#f8f9fb"></div>
+            <span>Light</span>
+          </button>
+
+          <button class="mode" data-mode="dark">
+            <div class="mode-color" style="background:#151515"></div>
+            <span>Dark</span>
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3 class="title">Custom colors</h3>
+
+        <div class="picker-container">
+
+          <button class="color-picker" data-color="primary">
+            <div id="primaryPreview" class="color-preview"></div>
+            <span class="picker-label">Primary</span>
+          </button>
+
+          <button class="color-picker" data-color="secondary">
+            <div id="secondaryPreview" class="color-preview"></div>
+            <span class="picker-label">Secondary</span>
+          </button>
+
+          <button class="color-picker" data-color="tertiary">
+            <div id="tertiaryPreview" class="color-preview"></div>
+            <span class="picker-label">Tertiary</span>
+          </button>
+
+        </div>
+
+      </section>
+
+      <!-- ADVANCED -->
+      <section id="advanced" class="panel">
+
+        <div id="advancedControls"></div>
+
+        <div class="divider"></div>
+
+        <h3 class="title">Font</h3>
+
+        <div class="input-grid">
+
+          <div class="input-group">
+            <label>Body</label>
+            <input id="fontBody" type="text">
+          </div>
+
+          <div class="input-group">
+            <label>Mono</label>
+            <input id="fontMono" type="text">
+          </div>
+
+          <div class="input-group half">
+            <label>Size (px)</label>
+            <input id="fontSize" type="number">
+          </div>
+
+          <div class="input-group half">
+            <label>Line-height (px)</label>
+            <input id="lineHeight" type="number">
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- LIBRARY -->
+      <section id="library" class="panel">
+
+        <h3 class="title">Themes</h3>
+
+        <div id="themeLibrary" class="theme-grid"></div>
+
+      </section>
+
+    </aside>
+
+    <section class="code">
+
+      <div class="divider"></div>
+
+      <h3 class="title">Preview</h3>
+
+      <div class="preview">
+
+        <div class="preview-toolbar">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span style="margin-left:8px">App.js</span>
+        </div>
+
+        <div class="preview-body">
+
+          <div class="editor" id="editor"></div>
+
+          <div
+            class="live-preview"
+            id="livePreview"
+          ></div>
+
+        </div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 class="title">Export</h3>
+
+      <div class="export">
+
+        <pre id="jsonOutput"></pre>
+
+        <div class="export-actions">
+          <button id="copyButton">Copy JSON</button>
+          <button id="downloadButton">Download Theme</button>
+          <button id="resetButton">Reset</button>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    Custom Theme Generator
+  </footer>
+
+
+<script>
+/*
+ * ==========================================================
+ * Theme Generator
+ * Vanilla HTML / CSS / TypeScript-style JavaScript
+ * Converted from the original React + Sandpack project.
+ * ==========================================================
+ */
+
+
+/* ----------------------------------------------------------
+   DEFAULT COLORS
+---------------------------------------------------------- */
+
+const DEFAULT_COLORS = {
+  primary: "#0971F1",
+  secondary: "#BF5AF2",
+  tertiary: "#FF453A"
+};
+
+const DEFAULT_MODE = "light";
+
+
+/* ----------------------------------------------------------
+   UTILS
+---------------------------------------------------------- */
+
+function hexToRgb(hex) {
+  hex = hex.replace("#", "");
+
+  if (hex.length === 3) {
+    hex = hex
+      .split("")
+      .map(x => x + x)
+      .join("");
+  }
+
+  const num = parseInt(hex, 16);
+
+  return {
+    r: (num >> 16) & 255,
+    g: (num >> 8) & 255,
+    b: num & 255
+  };
+}
+
+
+function rgbToHex(r, g, b) {
+  return "#" + [r, g, b]
+    .map(x => Math.max(0, Math.min(255, x))
+      .toString(16)
+      .padStart(2, "0"))
+    .join("")
+    .toUpperCase();
+}
+
+
+function mix(color1, color2, amount) {
+  const a = hexToRgb(color1);
+  const b = hexToRgb(color2);
+
+  return rgbToHex(
+    Math.round(a.r + (b.r - a.r) * amount),
+    Math.round(a.g + (b.g - a.g) * amount),
+    Math.round(a.b + (b.b - a.b) * amount)
+  );
+}
+
+
+/* ----------------------------------------------------------
+   GENERATE THEME
+---------------------------------------------------------- */
+
+function generateTheme(colors, mode) {
+
+  const dark = mode === "dark";
+
+  const background = dark
+    ? "#151515"
+    : "#FFFFFF";
+
+  const surface = dark
+    ? "#1D1D1F"
+    : "#F5F5F7";
+
+  const surface2 = dark
+    ? "#252527"
+    : "#EDEDEF";
+
+  const text = dark
+    ? "#F5F5F7"
+    : "#171717";
+
+  const textSecondary = dark
+    ? "#A1A1A6"
+    : "#6E6E73";
+
+  const border = dark
+    ? "#363638"
+    : "#D2D2D7";
+
+  return {
+    colors: {
+      accent: colors.primary,
+      surface1: background,
+      surface2: surface,
+      surface3: surface2,
+      clickable: colors.primary,
+      base: text,
+      disabled: textSecondary,
+      hover: surface,
+      focus: colors.primary,
+      surfaceInactive: surface,
+      surfaceActive: surface2,
+      error: colors.tertiary
+    },
+
+    syntax: {
+      plain: text,
+      comment: dark ? "#8E8E93" : "#6E6E73",
+      keyword: colors.primary,
+      definition: colors.secondary,
+      property: colors.primary,
+      static: colors.tertiary,
+      string: colors.secondary,
+      variable: text,
+      punctuation: textSecondary,
+      tag: colors.primary,
+      constant: colors.tertiary
+    },
+
+    font: {
+      body: "Inter, system-ui, sans-serif",
+      mono: "SFMono-Regular, Consolas, monospace",
+      size: "14px",
+      lineHeight: "22px"
+    }
+  };
+}
+
+
+/* ----------------------------------------------------------
+   STATE
+---------------------------------------------------------- */
+
+let simpleColors = {
+  ...DEFAULT_COLORS
+};
+
+let mode = DEFAULT_MODE;
+
+let theme = generateTheme(
+  simpleColors,
+  mode
+);
+
+
+/* ----------------------------------------------------------
+   THEME LIBRARY
+---------------------------------------------------------- */
+
+const themeGallery = {
+
+  "Default Light": generateTheme(
+    DEFAULT_COLORS,
+    "light"
+  ),
+
+  "Default Dark": generateTheme(
+    DEFAULT_COLORS,
+    "dark"
+  ),
+
+  "Ocean": generateTheme(
+    {
+      primary: "#0A84FF",
+      secondary: "#64D2FF",
+      tertiary: "#30D158"
+    },
+    "dark"
+  ),
+
+  "Purple": generateTheme(
+    {
+      primary: "#BF5AF2",
+      secondary: "#5E5CE6",
+      tertiary: "#FF375F"
+    },
+    "dark"
+  ),
+
+  "Sunset": generateTheme(
+    {
+      primary: "#FF9500",
+      secondary: "#FF375F",
+      tertiary: "#AF52DE"
+    },
+    "light"
+  ),
+
+  "Forest": generateTheme(
+    {
+      primary: "#30D158",
+      secondary: "#34C759",
+      tertiary: "#64D2FF"
+    },
+    "dark"
+  ),
+
+  "Monochrome": generateTheme(
+    {
+      primary: "#8E8E93",
+      secondary: "#636366",
+      tertiary: "#48484A"
+    },
+    "dark"
+  )
+
+};
+
+
+/* ----------------------------------------------------------
+   UPDATE BASIC COLOR
+---------------------------------------------------------- */
+
+function updateColor(key, color) {
+
+  simpleColors[key] = color;
+
+  theme = generateTheme(
+    simpleColors,
+    mode
+  );
+
+  render();
+}
+
+
+/* ----------------------------------------------------------
+   UPDATE MODE
+---------------------------------------------------------- */
+
+function updateMode(newMode) {
+
+  mode = newMode;
+
+  theme = generateTheme(
+    simpleColors,
+    mode
+  );
+
+  document.body.classList.toggle(
+    "dark",
+    mode === "dark"
+  );
+
+  render();
+}
+
+
+/* ----------------------------------------------------------
+   UPDATE ADVANCED THEME
+---------------------------------------------------------- */
+
+function updateTheme(path, value) {
+
+  const parts = path.split(".");
+
+  if (parts.length === 2) {
+
+    const area = parts[0];
+    const key = parts[1];
+
+    if (!theme[area]) {
+      theme[area] = {};
+    }
+
+    if (
+      area === "syntax" &&
+      key === "comment"
+    ) {
+
+      theme[area][key] = {
+        color: value,
+        fontStyle: "italic"
+      };
+
+    } else {
+
+      theme[area][key] = value;
+
+    }
+  }
+
+  render();
+}
+
+
+/* ----------------------------------------------------------
+   TABS
+---------------------------------------------------------- */
+
+document.querySelectorAll(".tab")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const tab =
+          button.dataset.tab;
+
+        document
+          .querySelectorAll(".tab")
+          .forEach(x =>
+            x.classList.remove("active")
+          );
+
+        document
+          .querySelectorAll(".panel")
+          .forEach(x =>
+            x.classList.remove("active")
+          );
+
+        button.classList.add("active");
+
+        document
+          .getElementById(tab)
+          .classList.add("active");
+
+      }
+    );
+
+  });
+
+
+/* ----------------------------------------------------------
+   COLOR PICKERS
+---------------------------------------------------------- */
+
+document
+  .querySelectorAll("[data-color]")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const key =
+          button.dataset.color;
+
+        const current =
+          simpleColors[key];
+
+        const input =
+          document.createElement("input");
+
+        input.type = "color";
+        input.value = current;
+
+        input.addEventListener(
+          "input",
+          e => {
+            updateColor(
+              key,
+              e.target.value
+            );
+          }
+        );
+
+        input.click();
+
+      }
+    );
+
+  });
+
+
+/* ----------------------------------------------------------
+   MODE BUTTONS
+-----------------
